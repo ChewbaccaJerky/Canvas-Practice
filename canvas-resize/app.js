@@ -18,6 +18,7 @@ function randomColor(colors) {
     return colors[index];
 }
 
+let stuff;
 class Circle {
     constructor(x, y, dx, dy, r, color) {
         this.x = x;
