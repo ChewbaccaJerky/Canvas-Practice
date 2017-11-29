@@ -1,9 +1,9 @@
-html, body {
+body, html {
     margin: 0;
     padding: 0;
-    /* background-image: url('../img/ninja.jpeg'); */
+    min-height: 100vh;
 }
 
-canvas {
-    background-color: #EEE;
+#sprite {
+    background-color: #FEFEFE;
 }

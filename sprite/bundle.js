@@ -75,66 +75,44 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.context = exports.canvas = undefined;
 
-var _randomize_util = __webpack_require__(1);
+var _sprite = __webpack_require__(1);
 
-var RandomizeUtil = _interopRequireWildcard(_randomize_util);
-
-var _ninja = __webpack_require__(2);
-
-var _ninja2 = _interopRequireDefault(_ninja);
+var _sprite2 = _interopRequireDefault(_sprite);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var canvas = exports.canvas = document.querySelector('canvas');
+var SONIC_URL = "../img/sonic.png";
+var canvas = exports.canvas = document.querySelector('#sprite');
 var context = exports.context = canvas.getContext('2d');
 
-//set height and width
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-// mouse
-var mouse = {
-    x: undefined,
-    y: undefined
-};
-
-// base event listeners
-window.addEventListener('mousemove', function (e) {
-    mouse.x = e.x;
-    mouse.y = e.y;
-    console.log(mouse);
-});
-
-window.addEventListener('resize', function (e) {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-});
-
-// event listeners for key listen
-
-
-// implementations
 var objects = [];
-var init = function init() {
-    objects = [];
-    var ninja = new _ninja2.default(0, 0);
-    objects.push(ninja);
-    // for(let i = 0; i < 100; i++) {
-    //     // objects.push();
-    // }
-};
+function init() {
+    var image = new Image();
+    image.src = "./img/sonic.png";
+    var options = {
+        image: image,
+        height: 200,
+        width: 580 / 4,
+        frames: 4
+    };
+    console.dir('test');
+    var sonic = new _sprite2.default(options);
+    sonic.draw();
+    objects.push(sonic);
+    window.addEventListener('keydown', sonic.handleKeyDown);
+    // window.addEventListener('keyup', sonic.handleKeyUp)
+}
 
-var animate = function animate() {
+function animate() {
     requestAnimationFrame(animate);
     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // context.fillText('CANVAS BOILER PLATE!', mouse.x, mouse.y);
     objects.forEach(function (object) {
-        object.draw();
+        object.update();
     });
-};
+}
 
 init();
 animate();
@@ -150,106 +128,65 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-// random position
-var randomPosition = exports.randomPosition = function randomPosition() {
-    var x = Math.random() * window.innerWidth;
-    var y = Math.random() * window.innerHeight;
-
-    return { x: x, y: y };
-};
-
-// random color
-var randomColor = exports.randomColor = function randomColor(COLOR_ARRAY) {
-    var idx = Math.floor(Math.random() * COLOR_ARRAY.length);
-    return COLOR_ARRAY[idx];
-};
-
-// random number by range
-var randomIntFromRange = exports.randomIntFromRange = function randomIntFromRange(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _sprite = __webpack_require__(5);
+var _app = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RUN = {
-    url: './img/ninja/run.jpg',
-    frames: 7
-};
+var Sprite = function () {
+    function Sprite(options) {
+        _classCallCheck(this, Sprite);
 
-var Ninja = function () {
-    function Ninja(x, y) {
-        _classCallCheck(this, Ninja);
-
-        this.x = x;
-        this.y = y;
-        var image = new Image();
-        image.src = RUN.url;
-        var options = {
-            height: 100,
-            width: image.width / RUN.frames,
-            image: image
-        };
-        this.sprite = (0, _sprite.createSprite)(options);
+        this.ctx = _app.context;
+        this.sx = 0;
+        this.sy = 0;
+        this.height = options.height;
+        this.width = options.width;
+        this.frames = options.frames;
+        this.frameIndex = 0;
+        this.image = options.image;
+        this.dx = 0;
+        this.dy = window.innerHeight - options.height;
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
-    _createClass(Ninja, [{
+    _createClass(Sprite, [{
         key: 'draw',
         value: function draw() {
-            this.sprite.ctx.drawImage(this.sprite.image, 0, 0);
+            _app.context.drawImage(this.image, this.sx, this.sy, this.width, this.height, this.dx, this.dy, 100, 100);
         }
     }, {
         key: 'update',
         value: function update() {
             this.draw();
+
+            //handle physics
+            if (this.dy < window.innerHeight - this.height) {
+                this.dy += 5;
+            }
+
+            this.frameIndex++;
+            this.sx = this.width * this.frameIndex % (this.width * this.frames);
+        }
+    }, {
+        key: 'handleKeyDown',
+        value: function handleKeyDown(e) {
+            if (e.key == 'ArrowRight') {
+                this.dx += 20;
+            } else if (e.key == 'ArrowLeft') {
+                this.dx -= 20;
+            } else if (e.key == ' ') {
+                console.log('jump');
+                this.dy -= 30;
+            }
         }
     }]);
 
-    return Ninja;
+    return Sprite;
 }();
 
-exports.default = Ninja;
-
-/***/ }),
-/* 3 */,
-/* 4 */,
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createSprite = undefined;
-
-var _app = __webpack_require__(0);
-
-var createSprite = exports.createSprite = function createSprite(options) {
-    var sprite = {
-        ctx: _app.context,
-        width: options.width,
-        height: options.height,
-        image: options.image
-    };
-
-    return sprite;
-};
+exports.default = Sprite;
 
 /***/ })
 /******/ ]);

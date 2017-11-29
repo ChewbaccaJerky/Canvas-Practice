@@ -1,54 +1,38 @@
-import * as RandomizeUtil from './util/randomize_util';
-import Ninja from './object/ninja';
+import Sprite from './sprite.js';
 
-export const canvas = document.querySelector('canvas');
+const SONIC_URL = "../img/sonic.png";
+export const canvas = document.querySelector('#sprite');
 export const context = canvas.getContext('2d');
 
-//set height and width
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-// mouse
-const mouse = {
-    x: undefined,
-    y: undefined
-};
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-// base event listeners
-window.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-    console.log(mouse);
-});
+const objects = [];
+function init() {
+    const image = new Image();
+    image.src = "./img/sonic.png";
+    const options = {
+        image: image,
+        height: 200,
+        width: 580/4,
+        frames: 4
+    };
+    console.dir('test');
+    const sonic = new Sprite(options);
+    sonic.draw();
+    objects.push(sonic);
+    window.addEventListener('keydown', sonic.handleKeyDown);
+    // window.addEventListener('keyup', sonic.handleKeyUp)
+}
 
-window.addEventListener('resize', (e) => {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-});
-
-// event listeners for key listen
-
-
-// implementations
-let objects = [];
-const init = () => {
-    objects = [];
-    const ninja = new Ninja(0, 0);
-    objects.push(ninja);
-    // for(let i = 0; i < 100; i++) {
-    //     // objects.push();
-    // }
-};
-
-const animate = () => {
-    requestAnimationFrame(animate);
+function animate() {
+    requestAnimationFrame(animate)
     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // context.fillText('CANVAS BOILER PLATE!', mouse.x, mouse.y);
     objects.forEach(object => {
-        object.draw();
+        object.update();
     });
-};
+}
 
 init();
 animate();
