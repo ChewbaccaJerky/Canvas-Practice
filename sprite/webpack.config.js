@@ -1,28 +1,12 @@
 const path = require('path');
 
+const ASSET_PATH = process.env.ASSET_PATH || './assets';
+
 module.exports = {
-    context: __dirname,
-    entry: "./js/app.js",
+    entry: "./javascript/index.js",
     output: {
-        path: path.resolve(__dirname),
-        filename: "bundle.js"
-    },
-    module: {
-        loaders: [
-            {
-                test: [
-                    /\.js?$/
-                ],
-                exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['env']
-                }
-            }
-        ]
-    },
-    devtool: 'source-maps',
-    resolve: {
-        extensions: [".js", "*"]
+        path: __dirname,
+        filename: "bundle.js",
+        publicPath: ASSET_PATH 
     }
 };
